@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {CartForm, Image, Money} from '@shopify/hydrogen';
 import {Link} from '@remix-run/react';
 import {useVariantUrl} from '~/utils';
@@ -149,9 +150,31 @@ function CartLineQuantity({line}) {
   const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
+  const [newQuantity, setNewQuantity] = useState(quantity);
+
   return (
     <div className="cart-line-quantiy">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
+      <label htmlFor={`${lineId}-quantity`}>Quantity:</label>
+      <CartLineUpdateButton lines={[{id: lineId, quantity: newQuantity}]}>
+        <input
+          id={`${lineId}-quantity`}
+          name={`${lineId}-quantity`}
+          type="number"
+          autoComplete="off"
+          value={newQuantity}
+          min="1"
+          max="100"
+          onChange={(event) => setNewQuantity(Number(event.target.value))}
+        />
+        {/* Only show Update button when the number input has an unsaved value. */}
+        {newQuantity !== quantity && (
+          <button
+            aria-label="Update quantity"
+            name="update-quantity"
+            type="submit"
+          >Update</button>
+        )}
+      </CartLineUpdateButton>
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
           aria-label="Decrease quantity"
